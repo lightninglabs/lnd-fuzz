@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("270108\"!70 9ABC0")

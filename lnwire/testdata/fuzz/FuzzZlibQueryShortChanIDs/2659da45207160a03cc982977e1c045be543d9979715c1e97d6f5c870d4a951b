@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("0800@00!091AB7X2YZa\"C8# ")
