@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("0200ACXZ\x83\x96\x99 \"$\x80\xc6a~c")
