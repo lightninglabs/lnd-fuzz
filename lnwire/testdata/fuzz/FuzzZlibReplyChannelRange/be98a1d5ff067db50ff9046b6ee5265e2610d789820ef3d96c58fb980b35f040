@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("222$2(7A00")

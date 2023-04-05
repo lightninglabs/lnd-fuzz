@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("0001A17289BXYZabxyz !C\"c")

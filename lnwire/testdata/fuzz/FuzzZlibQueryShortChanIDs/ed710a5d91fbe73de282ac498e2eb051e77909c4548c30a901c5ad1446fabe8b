@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("0070077ZZ0Z7'77Z'Z0000")

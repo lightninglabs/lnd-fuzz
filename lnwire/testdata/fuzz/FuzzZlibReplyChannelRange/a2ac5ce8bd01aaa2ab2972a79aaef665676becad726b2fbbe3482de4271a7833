@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("Cd\xba\f\x00G\x84O")

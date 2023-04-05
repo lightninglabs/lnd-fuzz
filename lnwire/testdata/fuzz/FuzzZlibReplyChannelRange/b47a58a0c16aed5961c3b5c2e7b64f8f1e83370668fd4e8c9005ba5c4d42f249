@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("87019ABcxyz!\"#$%&'()*+2,.\xf3\x96\x1f=\xda\x040YaXCCZ bCC")
