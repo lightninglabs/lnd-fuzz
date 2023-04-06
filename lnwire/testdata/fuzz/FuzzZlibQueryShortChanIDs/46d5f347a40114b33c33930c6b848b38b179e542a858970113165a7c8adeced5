@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("X0YZa\xd11cObOO`\xe5\xca\xdfxo\xb6\xfd7}2vA y#\x83\x92")

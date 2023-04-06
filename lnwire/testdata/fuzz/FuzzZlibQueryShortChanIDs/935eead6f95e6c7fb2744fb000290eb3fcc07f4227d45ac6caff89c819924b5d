@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("00019\xf7B00C0719\xf7BC0710000")
