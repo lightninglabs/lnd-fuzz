@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("000\x0300\xff000000\n\n\n\n\n\n\n\n")
