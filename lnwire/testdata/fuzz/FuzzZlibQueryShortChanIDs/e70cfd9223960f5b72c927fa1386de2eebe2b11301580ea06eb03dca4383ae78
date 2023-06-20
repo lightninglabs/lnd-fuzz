@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("Y0\b$!\"Z1ab#2c789A\x0fA9XB\x10C 0%")

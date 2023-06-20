@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("\xb1010\xd3\xceY\xceZab7 1AB7\x9f828299\xa2\xb1AC\xf9BǾ\xa2x\xf9X\xbe\xd7y\xafz\"\x9f#$%&\xaf'()BC900812000071")

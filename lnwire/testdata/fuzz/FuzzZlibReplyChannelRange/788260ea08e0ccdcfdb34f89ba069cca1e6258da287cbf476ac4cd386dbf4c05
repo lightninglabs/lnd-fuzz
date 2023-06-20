@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("1\xd72\xce1\xb88\xd5\xf8\xde\xffa79\x16ZX \\c;AC_xy\"\xf0\xe5$\xc9")
