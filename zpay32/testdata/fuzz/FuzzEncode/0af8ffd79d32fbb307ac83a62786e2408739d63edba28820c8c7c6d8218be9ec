@@ -1,0 +1,3 @@
+go test fuzz v1
+byte('V')
+string("10000000qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqyqqqqqqqqqqqqqqqqqqqqqqqqq00000000000000000000000002qqqqqqqqqqqqqqqz")
