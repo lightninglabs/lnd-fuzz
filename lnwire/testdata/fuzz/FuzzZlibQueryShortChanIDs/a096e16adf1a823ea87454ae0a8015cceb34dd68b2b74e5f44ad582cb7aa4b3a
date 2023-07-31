@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("xy0z1\xf7\xc378AC0XZ\xd0aiv\xe6bB\xc9c\xf42ˌ\xba\xcfj !c\"#9\x8f$%o|&\xa5\x9eY'҅;\xc0(")

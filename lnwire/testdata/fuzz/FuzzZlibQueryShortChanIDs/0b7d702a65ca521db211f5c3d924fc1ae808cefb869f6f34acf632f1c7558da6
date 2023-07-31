@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("01q9 \x80B\x8fC\xa2ӫXa\xbd>$\xca\xf0\xec")

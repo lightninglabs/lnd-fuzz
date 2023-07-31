@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("!_\x17\xfc")

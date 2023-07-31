@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("0010000X0001Yby0!00020080\"(000700.\xaf000B0#0\x990$00\xae000A00\x9c0090&00a00000')z\xb200c\xa2*0\xcf00\x9fx 0,0\x1a0\xcc0f000\xe500Z\xe8\f\xef}%+i\xb5իCm\xea00\xa80")

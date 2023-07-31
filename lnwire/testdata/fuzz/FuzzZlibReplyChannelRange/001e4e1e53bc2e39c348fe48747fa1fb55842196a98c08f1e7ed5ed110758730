@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("B\"%b\\X+,.\xce02\xe5?H\a\xb9\x0f\x1c\xea0\xcbY\xcf?\xa6\x8e\xad\xe4j\x14\xde11A7#7$'()Z29ax*cCzy!8CX& ")
