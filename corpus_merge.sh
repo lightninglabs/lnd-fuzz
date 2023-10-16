@@ -60,7 +60,7 @@ function measure_coverage {
 	export GODEBUG="fuzzdebug=1"
 
 	# Extract the number of inputs we're running on. 
-	num_inputs=$(ls "${CACHE_DIR}/${FUZZ_TARGET}" | wc -l)
+	num_inputs=$(ls "${CACHE_DIR}/${FUZZ_TARGET}" | wc -l | xargs)
 
 	go test -run="^${FUZZ_TARGET}$" -fuzz="^${FUZZ_TARGET}$" \
 		-fuzztime="${num_inputs}x" -test.fuzzcachedir="${CACHE_DIR}" \
@@ -103,7 +103,7 @@ mkdir "${CACHE_DIR}/${FUZZ_TARGET}"
 coverage=0
 if [[ -n $(ls "${DEST_DIR}") ]]; then
 	cp "${DEST_DIR}"/* "${CACHE_DIR}/${FUZZ_TARGET}/"
-	coverage=$(measure_coverage)
+	coverage=$(measure_coverage | sed 's/[^0-9]*//g')
 fi
 echo "Baseline coverage: ${coverage}"
 
@@ -124,7 +124,7 @@ for f in $(ls -rS "${SRC_DIR}"); do
 
 	# Add f to our cache dir and see if it increases coverage.
 	cp "${SRC_DIR}/${f}" "${CACHE_DIR}/${FUZZ_TARGET}/"
-	newcoverage=$(measure_coverage)
+	newcoverage=$(measure_coverage | sed 's/[^0-9]*//g')
 
 	if (( newcoverage > coverage )); then
 		coverage="${newcoverage}"
