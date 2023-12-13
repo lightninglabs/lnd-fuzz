@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("qT?\xeeW\xe684\x05 \x1dn\xa3p\x97I\xe8\xdf\r\x19DYl\xa2")
