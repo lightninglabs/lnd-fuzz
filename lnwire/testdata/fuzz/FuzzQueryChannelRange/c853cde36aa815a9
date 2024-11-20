@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("c#.aXz1&80\"8ba.\x00\x000080B02y82A#10)\x00By#+y\"0\x01\x04\"000")
