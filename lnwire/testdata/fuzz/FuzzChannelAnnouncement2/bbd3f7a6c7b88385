@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("Bca109019727CaYcA\"2 72Z001Y199#10980\"za8z%1aA2120YY911Y1782(B87#\x02\x0227")
