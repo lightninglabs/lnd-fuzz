@@ -1,0 +1,7 @@
+go test fuzz v1
+string("\x03\xed\xdb/\xe7\xe0*\x12")
+string("")
+string("")
+string("\xe0\x7f\xcd\xc3")
+[]byte("")
+[]byte("\x03")
