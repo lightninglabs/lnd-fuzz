@@ -1,0 +1,7 @@
+go test fuzz v1
+string("0")
+string("0")
+string("0")
+string("0")
+[]byte("0")
+[]byte("\x03C\x900\xdd0\xed00000\xc1000000000\x900\x900\xb80\xad0")

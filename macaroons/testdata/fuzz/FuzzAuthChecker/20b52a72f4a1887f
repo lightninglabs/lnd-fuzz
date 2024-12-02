@@ -1,0 +1,7 @@
+go test fuzz v1
+string("")
+string("0")
+string("")
+string("")
+[]byte("")
+[]byte("\x03C0000000000000000")
