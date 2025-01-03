@@ -1,0 +1,6 @@
+go test fuzz v1
+uint64(56)
+rune('7')
+rune('Y')
+uint64(53)
+uint64(8)
