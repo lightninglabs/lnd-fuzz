@@ -1,2 +1,0 @@
-go test fuzz v1
-[]byte("\n\x0221\xfe Y#1\x0210\xfe'22X\x0211\xfe+2YY\x0281\xfe1817\x051A1B8")
