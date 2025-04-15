@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("\f!\x02\x10100000000\x100000000qqqqqqq0000200")
