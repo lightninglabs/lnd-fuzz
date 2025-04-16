@@ -55,8 +55,8 @@ function collect_combine_cov_profiles {
     local coverage_dirs_len=${#coverage_dirs[@]}
 
     for ((i = 0; i < coverage_dirs_len - 1; i++)); do
-    profile_str+="./${coverage_dirs[$i]},"
-        done
+        profile_str+="./${coverage_dirs[$i]},"
+    done
     profile_str+="./${coverage_dirs[coverage_dirs_len-1]}"
 
     go tool covdata textfmt -i="${profile_str}" -o="${BASE_DIR}/coverage/profile"
