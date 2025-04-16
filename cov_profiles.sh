@@ -31,7 +31,7 @@ function collect_combine_cov_profiles {
         for f in $(ls $PWD); do
             # Copy corpus to CACHE_DIR.
             mkdir -p "${CACHE_DIR}/${f}"
-            cp -a "${BASE_DIR}/${p}/testdata/fuzz/${f}"/ "${CACHE_DIR}/${f}/"
+            cp -a "${BASE_DIR}/${p}/testdata/fuzz/${f}"/* "${CACHE_DIR}/${f}/"
             num_inputs=$(find "${CACHE_DIR}/${f}/" -maxdepth 1 -type f | wc -l | tr -d '[:space:]')
             mkdir -p "${BASE_DIR}/coverage/${f}"
 
