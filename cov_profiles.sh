@@ -28,7 +28,7 @@ function collect_combine_cov_profiles {
     for p in ${PACKAGES[@]}; do
         pushd "${BASE_DIR}/${p}/testdata/fuzz"
 
-        for f in $(ls $PWD); do
+        for f in $(ls "${BASE_DIR}/${p}/testdata/fuzz"); do
             # Copy corpus to CACHE_DIR.
             mkdir -p "${CACHE_DIR}/${f}"
             cp -a "${BASE_DIR}/${p}/testdata/fuzz/${f}"/* "${CACHE_DIR}/${f}/"
