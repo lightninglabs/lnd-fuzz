@@ -81,6 +81,17 @@ func (m *MockFileSystem) DirExists(path string) bool {
 	return m.dirs[path]
 }
 
+// GetDirs returns all directories in the mock filesystem (for debugging).
+func (m *MockFileSystem) GetDirs() []string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	var dirs []string
+	for dir := range m.dirs {
+		dirs = append(dirs, dir)
+	}
+	return dirs
+}
+
 // GetFileContent returns the content of a file.
 func (m *MockFileSystem) GetFileContent(path string) []byte {
 	m.mu.Lock()
@@ -296,6 +307,17 @@ func (m *MockFileSystem) Rename(oldpath, newpath string) error {
 	return os.ErrNotExist
 }
 
+// TempDir implements FileSystem.TempDir
+func (m *MockFileSystem) TempDir(dir, pattern string) (string, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	
+	m.tempNum++
+	name := fmt.Sprintf("/tmp/%s%d", strings.ReplaceAll(pattern, "*", ""), m.tempNum)
+	m.dirs[name] = true
+	return name, nil
+}
+
 // mockFile implements os.FileInfo
 func (f *mockFile) Name() string       { return f.name }
 func (f *mockFile) Size() int64        { return int64(len(f.content)) }
@@ -430,6 +452,11 @@ func (m *MockCommandRunner) Run(dir string, env []string, name string, args ...s
 	// Default output for go test commands
 	if name == "go" && len(args) > 0 && args[0] == "test" {
 		return []byte("DEBUG finished processing ... initial coverage bits: 100"), nil
+	}
+	
+	// Default output for go tool covdata commands
+	if name == "go" && len(args) >= 3 && args[0] == "tool" && args[1] == "covdata" && args[2] == "textfmt" {
+		return []byte("mode: set\ndefault coverage data"), nil
 	}
 	
 	return nil, fmt.Errorf("unexpected command: %s %v", name, args)

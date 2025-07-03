@@ -40,6 +40,10 @@ func (OSFileSystem) Rename(oldpath, newpath string) error {
 	return os.Rename(oldpath, newpath)
 }
 
+func (OSFileSystem) TempDir(dir, pattern string) (string, error) {
+	return os.MkdirTemp(dir, pattern)
+}
+
 // OSCommandRunner implements CommandRunner using os/exec.
 type OSCommandRunner struct{}
 

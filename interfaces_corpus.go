@@ -30,6 +30,9 @@ type FileSystem interface {
 	
 	// Rename renames a file or directory.
 	Rename(oldpath, newpath string) error
+	
+	// TempDir creates a new temporary directory.
+	TempDir(dir, pattern string) (string, error)
 }
 
 // File represents an open file.
