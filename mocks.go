@@ -386,6 +386,7 @@ func (h *mockFileHandle) updateContent() {
 	}
 }
 
+
 // MockCommandRunner is a mock implementation of CommandRunner for testing.
 type MockCommandRunner struct {
 	mu       sync.Mutex
