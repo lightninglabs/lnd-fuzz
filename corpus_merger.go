@@ -28,7 +28,7 @@ func NewCorpusMerger(cfg CorpusMergeConfig) *CorpusMerger {
 	if cfg.CmdRunner == nil {
 		cfg.CmdRunner = &OSCommandRunner{}
 	}
-	
+
 	return &CorpusMerger{
 		Config:   cfg,
 		fs:       cfg.FS,
@@ -53,7 +53,7 @@ func (m *CorpusMerger) Analyze() (*MergeResult, error) {
 		StartTime: time.Now(),
 		Inputs:    []MergeInput{},
 	}
-	
+
 	// Create cache directory if not provided
 	cacheDir := m.Config.CacheDir
 	if cacheDir == "" {
@@ -64,22 +64,22 @@ func (m *CorpusMerger) Analyze() (*MergeResult, error) {
 		defer m.fs.RemoveAll(tmpDir)
 		cacheDir = tmpDir
 	}
-	
+
 	// Validate arguments
 	if err := m.validateArgs(); err != nil {
 		return nil, err
 	}
-	
+
 	// Create fuzz target cache directory
 	targetCacheDir := filepath.Join(cacheDir, m.Config.FuzzTarget)
 	if err := m.fs.MkdirAll(targetCacheDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create cache dir: %w", err)
 	}
-	
+
 	// Handle testdata directory
 	fuzzTestdataDir := filepath.Join(m.Config.PackageDir, "testdata", "fuzz", m.Config.FuzzTarget)
 	backupDir := fuzzTestdataDir + ".bak"
-	
+
 	if _, err := m.fs.Stat(fuzzTestdataDir); err == nil {
 		if err := m.fs.Rename(fuzzTestdataDir, backupDir); err != nil {
 			return nil, fmt.Errorf("failed to backup testdata: %w", err)
@@ -89,14 +89,14 @@ func (m *CorpusMerger) Analyze() (*MergeResult, error) {
 			m.fs.Rename(backupDir, fuzzTestdataDir)
 		}()
 	}
-	
+
 	// Measure baseline coverage
 	coverage := 0
 	destFiles, err := m.fs.ReadDir(m.Config.DestDir)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, fmt.Errorf("failed to read dest dir: %w", err)
 	}
-	
+
 	if len(destFiles) > 0 {
 		// Copy existing corpus to cache
 		for _, f := range destFiles {
@@ -109,34 +109,34 @@ func (m *CorpusMerger) Analyze() (*MergeResult, error) {
 				return nil, fmt.Errorf("failed to copy %s: %w", f.Name(), err)
 			}
 		}
-		
+
 		coverage, err = m.measureCoverage(cacheDir)
 		if err != nil {
 			return nil, fmt.Errorf("failed to measure baseline coverage: %w", err)
 		}
 	}
-	
+
 	result.BaselineCoverage = coverage
 	m.progress.ReportInfo(fmt.Sprintf("Baseline coverage: %d", coverage))
-	
+
 	// Get sorted list of source files
 	srcFiles, err := m.getSortedFiles(m.Config.SrcDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read source dir: %w", err)
 	}
-	
+
 	result.InputsAnalyzed = len(srcFiles)
-	
+
 	// Analyze each input
 	for i, f := range srcFiles {
-		m.progress.ReportProgress(i+1, len(srcFiles), 
+		m.progress.ReportProgress(i+1, len(srcFiles),
 			fmt.Sprintf("Analyzing %s", f.Name))
-		
+
 		input := MergeInput{
 			Name: f.Name,
 			Size: f.Size,
 		}
-		
+
 		// Check if already in destination
 		destPath := filepath.Join(m.Config.DestDir, f.Name)
 		if _, err := m.fs.Stat(destPath); err == nil {
@@ -144,44 +144,44 @@ func (m *CorpusMerger) Analyze() (*MergeResult, error) {
 			result.Inputs = append(result.Inputs, input)
 			continue
 		}
-		
+
 		// Copy to cache and measure coverage
 		srcPath := filepath.Join(m.Config.SrcDir, f.Name)
 		cachePath := filepath.Join(targetCacheDir, f.Name)
 		if err := m.copyFile(srcPath, cachePath); err != nil {
 			return nil, fmt.Errorf("failed to copy %s to cache: %w", f.Name, err)
 		}
-		
+
 		newCoverage, err := m.measureCoverage(cacheDir)
 		if err != nil {
 			return nil, fmt.Errorf("failed to measure coverage for %s: %w", f.Name, err)
 		}
-		
+
 		if newCoverage > coverage {
 			input.CoverageIncrease = newCoverage - coverage
 			input.Added = true
 			coverage = newCoverage
 			result.InputsAdded++
-			m.progress.ReportInfo(fmt.Sprintf("Input %s increased coverage by %d to %d", 
+			m.progress.ReportInfo(fmt.Sprintf("Input %s increased coverage by %d to %d",
 				f.Name, input.CoverageIncrease, coverage))
 		} else {
 			// Remove from cache if no coverage increase
 			m.fs.Remove(cachePath)
 			input.SkippedReason = "no coverage increase"
-			
+
 			if newCoverage < coverage {
 				m.progress.ReportWarning(fmt.Sprintf(
 					"Nondeterministic fuzz target: coverage decreased from %d to %d",
 					coverage, newCoverage))
 			}
 		}
-		
+
 		result.Inputs = append(result.Inputs, input)
 	}
-	
+
 	result.FinalCoverage = coverage
 	result.EndTime = time.Now()
-	
+
 	return result, nil
 }
 
@@ -190,27 +190,27 @@ func (m *CorpusMerger) Apply(result *MergeResult) error {
 	if result == nil {
 		return fmt.Errorf("no merge result provided")
 	}
-	
+
 	copiedCount := 0
 	for _, input := range result.Inputs {
 		if !input.Added {
 			continue
 		}
-		
+
 		srcPath := filepath.Join(m.Config.SrcDir, input.Name)
 		destPath := filepath.Join(m.Config.DestDir, input.Name)
-		
+
 		if err := m.copyFile(srcPath, destPath); err != nil {
 			return fmt.Errorf("failed to copy %s: %w", input.Name, err)
 		}
 		copiedCount++
 	}
-	
+
 	if copiedCount != result.InputsAdded {
-		return fmt.Errorf("expected to copy %d files but copied %d", 
+		return fmt.Errorf("expected to copy %d files but copied %d",
 			result.InputsAdded, copiedCount)
 	}
-	
+
 	return nil
 }
 
@@ -218,11 +218,11 @@ func (m *CorpusMerger) Apply(result *MergeResult) error {
 func (m *CorpusMerger) validateArgs() error {
 	fuzzTestdataDir := filepath.Join(m.Config.PackageDir, "testdata", "fuzz", m.Config.FuzzTarget)
 	backupDir := fuzzTestdataDir + ".bak"
-	
+
 	if _, err := m.fs.Stat(backupDir); err == nil {
 		return fmt.Errorf("%s already exists", backupDir)
 	}
-	
+
 	// Check if paths are the same
 	if m.sameFile(fuzzTestdataDir, m.Config.SrcDir) {
 		return fmt.Errorf("SRC_DIR must not be the testdata fuzz seed directory")
@@ -230,7 +230,7 @@ func (m *CorpusMerger) validateArgs() error {
 	if m.sameFile(fuzzTestdataDir, m.Config.DestDir) {
 		return fmt.Errorf("DEST_DIR must not be the testdata fuzz seed directory")
 	}
-	
+
 	return nil
 }
 
@@ -255,7 +255,7 @@ func (m *CorpusMerger) measureCoverage(cacheDir string) (int, error) {
 			numInputs++
 		}
 	}
-	
+
 	// Run fuzzing with debug output
 	env := append(os.Environ(), "GODEBUG=fuzzdebug=1")
 	args := []string{
@@ -265,7 +265,7 @@ func (m *CorpusMerger) measureCoverage(cacheDir string) (int, error) {
 		fmt.Sprintf("-fuzztime=%dx", numInputs),
 		fmt.Sprintf("-test.fuzzcachedir=%s", cacheDir),
 	}
-	
+
 	output, err := m.runner.Run(m.Config.PackageDir, env, "go", args...)
 	if err != nil {
 		// Check if the error is due to no tests found (expected)
@@ -273,19 +273,19 @@ func (m *CorpusMerger) measureCoverage(cacheDir string) (int, error) {
 			return 0, fmt.Errorf("go test failed: %w\n%s", err, output)
 		}
 	}
-	
+
 	// Extract coverage bits
 	re := regexp.MustCompile(`initial coverage bits:\s*(\d+)`)
 	matches := re.FindStringSubmatch(string(output))
 	if len(matches) < 2 {
 		return 0, fmt.Errorf("could not find coverage bits in output")
 	}
-	
+
 	coverage, err := strconv.Atoi(matches[1])
 	if err != nil {
 		return 0, fmt.Errorf("failed to parse coverage: %w", err)
 	}
-	
+
 	return coverage, nil
 }
 
@@ -295,7 +295,7 @@ func (m *CorpusMerger) getSortedFiles(dir string) ([]FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var files []FileInfo
 	for _, e := range entries {
 		if e.IsDir() {
@@ -310,12 +310,12 @@ func (m *CorpusMerger) getSortedFiles(dir string) ([]FileInfo, error) {
 			Size: info.Size(),
 		})
 	}
-	
+
 	// Sort by size (smallest first)
 	sort.Slice(files, func(i, j int) bool {
 		return files[i].Size < files[j].Size
 	})
-	
+
 	return files, nil
 }
 
@@ -326,18 +326,18 @@ func (m *CorpusMerger) copyFile(src, dst string) error {
 		return err
 	}
 	defer source.Close()
-	
+
 	// Ensure destination directory exists
 	if err := m.fs.MkdirAll(filepath.Dir(dst), 0755); err != nil {
 		return err
 	}
-	
+
 	destination, err := m.fs.Create(dst)
 	if err != nil {
 		return err
 	}
 	defer destination.Close()
-	
+
 	_, err = destination.ReadFrom(source)
 	return err
 }

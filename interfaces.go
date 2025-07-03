@@ -16,28 +16,28 @@ type File interface {
 type FileSystem interface {
 	// ReadDir reads the directory and returns a list of directory entries.
 	ReadDir(name string) ([]os.DirEntry, error)
-	
+
 	// Stat returns file info for the given path.
 	Stat(name string) (os.FileInfo, error)
-	
+
 	// Open opens a file for reading.
 	Open(name string) (File, error)
-	
+
 	// Create creates or truncates the named file.
 	Create(name string) (File, error)
-	
+
 	// MkdirAll creates a directory path and all necessary parents.
 	MkdirAll(path string, perm os.FileMode) error
-	
+
 	// Remove removes the named file or empty directory.
 	Remove(name string) error
-	
+
 	// RemoveAll removes path and any children it contains.
 	RemoveAll(path string) error
-	
+
 	// Rename renames (moves) a file.
 	Rename(oldpath, newpath string) error
-	
+
 	// TempDir creates a new temporary directory.
 	TempDir(dir, pattern string) (string, error)
 }

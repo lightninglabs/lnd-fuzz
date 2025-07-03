@@ -4,15 +4,15 @@ import "fmt"
 
 // CorpusMergeConfig contains configuration for corpus merging.
 type CorpusMergeConfig struct {
-	DestDir     string
-	SrcDir      string
-	PackageDir  string
-	FuzzTarget  string
-	CacheDir    string
-	
+	DestDir    string
+	SrcDir     string
+	PackageDir string
+	FuzzTarget string
+	CacheDir   string
+
 	// Optional fields for dependency injection
-	FS            FileSystem
-	CmdRunner     CommandRunner
+	FS        FileSystem
+	CmdRunner CommandRunner
 }
 
 // FileInfo holds file information for sorting by size.
@@ -29,24 +29,24 @@ type FileInfo struct {
 // Deprecated: Use NewCorpusMerger for more control and better testability.
 func MergeCorpus(cfg CorpusMergeConfig) error {
 	merger := NewCorpusMerger(cfg)
-	
+
 	// Use a simple console reporter
 	merger.SetProgressReporter(&consoleReporter{})
-	
+
 	// Analyze
 	result, err := merger.Analyze()
 	if err != nil {
 		return err
 	}
-	
+
 	// Apply
 	if err := merger.Apply(result); err != nil {
 		return err
 	}
-	
-	fmt.Printf("\nAdded %d new inputs. Final coverage: %d\n", 
+
+	fmt.Printf("\nAdded %d new inputs. Final coverage: %d\n",
 		result.InputsAdded, result.FinalCoverage)
-	
+
 	return nil
 }
 

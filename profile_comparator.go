@@ -37,25 +37,25 @@ func (p *ProfileComparator) Compare(firstProfilePath, secondProfilePath string) 
 		return nil, fmt.Errorf("failed to open first profile: %w", err)
 	}
 	defer f1.Close()
-	
-	// Open second profile  
+
+	// Open second profile
 	f2, err := os.Open(secondProfilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open second profile: %w", err)
 	}
 	defer f2.Close()
-	
+
 	// Parse profiles
 	firstCoverage, err := p.profileReader.ReadProfile(f1)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse first profile: %w", err)
 	}
-	
+
 	secondCoverage, err := p.profileReader.ReadProfile(f2)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse second profile: %w", err)
 	}
-	
+
 	// Find newly hit blocks
 	var newlyHitBlocks []CoverageBlock
 	for block, hitCount := range secondCoverage {
@@ -66,13 +66,13 @@ func (p *ProfileComparator) Compare(firstProfilePath, secondProfilePath string) 
 			})
 		}
 	}
-	
+
 	// Calculate totals
 	totalNewHits := 0
 	for _, block := range newlyHitBlocks {
 		totalNewHits += block.HitCount
 	}
-	
+
 	return &ComparisonResult{
 		NewlyHitBlocks: newlyHitBlocks,
 		TotalNewBlocks: len(newlyHitBlocks),
@@ -89,21 +89,21 @@ type defaultProfileReader struct{}
 func (r *defaultProfileReader) ReadProfile(reader io.Reader) (map[string]int, error) {
 	coverage := make(map[string]int)
 	scanner := bufio.NewScanner(reader)
-	
+
 	for scanner.Scan() {
 		line := scanner.Text()
-		
+
 		// Skip empty lines
 		if strings.TrimSpace(line) == "" {
 			continue
 		}
-		
+
 		// Split on whitespace
 		parts := strings.Fields(line)
 		if len(parts) == 0 {
 			continue
 		}
-		
+
 		// The last part should be the hit count
 		lastPart := parts[len(parts)-1]
 		hitCount, err := strconv.Atoi(lastPart)
@@ -111,16 +111,16 @@ func (r *defaultProfileReader) ReadProfile(reader io.Reader) (map[string]int, er
 			// This line doesn't end with a number, skip it
 			continue
 		}
-		
+
 		// Everything before the hit count is the block
 		block := strings.Join(parts[:len(parts)-1], " ")
 		coverage[block] = hitCount
 	}
-	
+
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("failed to scan file: %w", err)
 	}
-	
+
 	return coverage, nil
 }
 
@@ -131,7 +131,7 @@ func CompareCoverageProfiles(firstProfilePath, secondProfilePath string) (*Profi
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Convert to legacy ProfileDiff for backward compatibility
 	return &ProfileDiff{
 		NewlyHitBlocks: result.NewlyHitBlocks,
@@ -145,16 +145,16 @@ func WriteProfileDiff(diff *ProfileDiff, outputPath string) error {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
 	defer file.Close()
-	
+
 	writer := bufio.NewWriter(file)
 	defer writer.Flush()
-	
+
 	for _, block := range diff.NewlyHitBlocks {
 		if _, err := fmt.Fprintf(writer, "%s %d\n", block.Block, block.HitCount); err != nil {
 			return fmt.Errorf("failed to write block: %w", err)
 		}
 	}
-	
+
 	return nil
 }
 

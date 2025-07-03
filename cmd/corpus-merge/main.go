@@ -37,9 +37,9 @@ func (r *cliProgressReporter) ReportError(message string) {
 
 func main() {
 	var (
-		verbose   bool
-		dryRun    bool
-		cacheDir  string
+		verbose  bool
+		dryRun   bool
+		cacheDir string
 	)
 
 	flag.BoolVar(&verbose, "v", false, "verbose output")
@@ -97,7 +97,7 @@ func main() {
 		fmt.Println("\nInputs that increase coverage:")
 		for _, input := range result.Inputs {
 			if input.Added {
-				fmt.Printf("  %s (size: %d, coverage increase: +%d)\n", 
+				fmt.Printf("  %s (size: %d, coverage increase: +%d)\n",
 					input.Name, input.Size, input.CoverageIncrease)
 			}
 		}

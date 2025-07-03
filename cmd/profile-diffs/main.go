@@ -10,8 +10,8 @@ import (
 
 func main() {
 	var (
-		verbose  bool
-		summary  bool
+		verbose bool
+		summary bool
 	)
 
 	flag.BoolVar(&verbose, "v", false, "verbose output (list all new blocks)")

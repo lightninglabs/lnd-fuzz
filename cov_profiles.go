@@ -13,7 +13,7 @@ type CovProfilesConfig struct {
 	BaseDir  string // lnd-fuzz directory
 	CacheDir string
 	Packages []string
-	
+
 	// Optional dependencies for testing
 	FS        FileSystem
 	CmdRunner CommandRunner
@@ -39,25 +39,25 @@ func DefaultPackages() []string {
 // Deprecated: Use NewCoverageCollector for more control and better testability.
 func CollectCoverageProfiles(cfg CovProfilesConfig) error {
 	collector := NewCoverageCollector(cfg)
-	
+
 	// Use a simple console reporter
 	collector.SetProgressReporter(&consoleReporter{})
-	
+
 	// Collect coverage
 	result, err := collector.Collect()
 	if err != nil {
 		return err
 	}
-	
+
 	// Write to disk
 	if err := collector.Write(result); err != nil {
 		return err
 	}
-	
+
 	fmt.Printf("Coverage profile written to: %s\n", result.ProfilePath)
 	fmt.Println("View coverage in HTML with:")
 	fmt.Printf("  cd %s && go tool cover -html ../lnd-fuzz/coverage/profile\n", cfg.LNDDir)
-	
+
 	return nil
 }
 

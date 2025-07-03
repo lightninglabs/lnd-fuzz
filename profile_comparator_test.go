@@ -22,7 +22,7 @@ func (m *mockProfileReader) ReadProfile(r io.Reader) (map[string]int, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
-	
+
 	// Get filename from the reader if it's a file
 	if f, ok := r.(*os.File); ok {
 		name := f.Name()
@@ -37,7 +37,7 @@ func (m *mockProfileReader) ReadProfile(r io.Reader) (map[string]int, error) {
 			return profile, nil
 		}
 	}
-	
+
 	// Default empty profile
 	return map[string]int{}, nil
 }
@@ -56,25 +56,25 @@ func TestProfileComparator_Compare(t *testing.T) {
 			setupFiles: func(tmpDir string) (string, string) {
 				profile1 := filepath.Join(tmpDir, "profile1.txt")
 				profile2 := filepath.Join(tmpDir, "profile2.txt")
-				
+
 				os.WriteFile(profile1, []byte(`mode: set
 github.com/example/file.go:1.1,2.2 1 10
 github.com/example/file.go:3.3,4.4 1 0
 github.com/example/file.go:5.5,6.6 1 5`), 0644)
-				
+
 				os.WriteFile(profile2, []byte(`mode: set
 github.com/example/file.go:1.1,2.2 1 15
 github.com/example/file.go:3.3,4.4 1 20
 github.com/example/file.go:5.5,6.6 1 0
 github.com/example/file.go:7.7,8.8 1 30`), 0644)
-				
+
 				return profile1, profile2
 			},
 			validateResult: func(result *ComparisonResult) error {
 				if len(result.NewlyHitBlocks) != 2 {
 					return fmt.Errorf("expected 2 newly hit blocks, got %d", len(result.NewlyHitBlocks))
 				}
-				
+
 				// Check for specific blocks
 				foundBlock3 := false
 				foundBlock7 := false
@@ -86,19 +86,19 @@ github.com/example/file.go:7.7,8.8 1 30`), 0644)
 						foundBlock7 = true
 					}
 				}
-				
+
 				if !foundBlock3 || !foundBlock7 {
 					return fmt.Errorf("expected blocks not found")
 				}
-				
+
 				if result.TotalNewBlocks != 2 {
 					return fmt.Errorf("expected TotalNewBlocks=2, got %d", result.TotalNewBlocks)
 				}
-				
+
 				if result.TotalNewHits != 50 {
 					return fmt.Errorf("expected TotalNewHits=50, got %d", result.TotalNewHits)
 				}
-				
+
 				return nil
 			},
 		},
@@ -107,14 +107,14 @@ github.com/example/file.go:7.7,8.8 1 30`), 0644)
 			setupFiles: func(tmpDir string) (string, string) {
 				profile1 := filepath.Join(tmpDir, "profile1.txt")
 				profile2 := filepath.Join(tmpDir, "profile2.txt")
-				
+
 				content := `mode: set
 github.com/example/file.go:1.1,2.2 1 10
 github.com/example/file.go:3.3,4.4 1 5`
-				
+
 				os.WriteFile(profile1, []byte(content), 0644)
 				os.WriteFile(profile2, []byte(content), 0644)
-				
+
 				return profile1, profile2
 			},
 			validateResult: func(result *ComparisonResult) error {
@@ -135,10 +135,10 @@ github.com/example/file.go:3.3,4.4 1 5`
 			setupFiles: func(tmpDir string) (string, string) {
 				profile1 := filepath.Join(tmpDir, "profile1.txt")
 				profile2 := filepath.Join(tmpDir, "profile2.txt")
-				
+
 				os.WriteFile(profile1, []byte(""), 0644)
 				os.WriteFile(profile2, []byte(""), 0644)
-				
+
 				return profile1, profile2
 			},
 			validateResult: func(result *ComparisonResult) error {
@@ -173,12 +173,12 @@ github.com/example/file.go:3.3,4.4 1 5`
 			setupFiles: func(tmpDir string) (string, string) {
 				profile1 := filepath.Join(tmpDir, "profile1.txt")
 				profile2 := filepath.Join(tmpDir, "profile2.txt")
-				
+
 				os.WriteFile(profile1, []byte("mode: set\n"), 0644)
 				os.WriteFile(profile2, []byte(`mode: set
 github.com/example/file.go:1.1,2.2 1 10
 github.com/example/file.go:3.3,4.4 1 20`), 0644)
-				
+
 				return profile1, profile2
 			},
 			validateResult: func(result *ComparisonResult) error {
@@ -196,13 +196,13 @@ github.com/example/file.go:3.3,4.4 1 20`), 0644)
 			setupFiles: func(tmpDir string) (string, string) {
 				profile1 := filepath.Join(tmpDir, "profile1.txt")
 				profile2 := filepath.Join(tmpDir, "profile2.txt")
-				
+
 				os.WriteFile(profile1, []byte(`mode: set
 github.com/example/file.go:1.1,2.2 1 10`), 0644)
-				
+
 				os.WriteFile(profile2, []byte(`mode: set
 github.com/example/file.go:1.1,2.2 1 20`), 0644)
-				
+
 				return profile1, profile2
 			},
 			validateResult: func(result *ComparisonResult) error {
@@ -213,26 +213,26 @@ github.com/example/file.go:1.1,2.2 1 20`), 0644)
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tmpDir := t.TempDir()
 			comparator := NewProfileComparator()
-			
+
 			// Setup custom reader if provided
 			if tt.setupReader != nil {
 				comparator.SetProfileReader(tt.setupReader())
 			}
-			
+
 			// Setup files
 			var profile1, profile2 string
 			if tt.setupFiles != nil {
 				profile1, profile2 = tt.setupFiles(tmpDir)
 			}
-			
+
 			// Compare profiles
 			result, err := comparator.Compare(profile1, profile2)
-			
+
 			// Check error
 			if tt.expectError {
 				if err == nil {
@@ -244,18 +244,18 @@ github.com/example/file.go:1.1,2.2 1 20`), 0644)
 				}
 				return
 			}
-			
+
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-			
+
 			// Validate result
 			if tt.validateResult != nil {
 				if err := tt.validateResult(result); err != nil {
 					t.Errorf("result validation failed: %v", err)
 				}
 			}
-			
+
 			// Verify paths are set correctly
 			if result.Profile1Path != profile1 {
 				t.Errorf("expected Profile1Path=%s, got %s", profile1, result.Profile1Path)
@@ -269,18 +269,18 @@ github.com/example/file.go:1.1,2.2 1 20`), 0644)
 
 func TestProfileComparator_SetProfileReader(t *testing.T) {
 	comparator := NewProfileComparator()
-	
+
 	// Test setting a custom reader
 	customReader := &mockProfileReader{
 		profiles: map[string]map[string]int{},
 	}
 	comparator.SetProfileReader(customReader)
-	
+
 	// Verify it uses the custom reader
 	if comparator.profileReader != customReader {
 		t.Errorf("custom reader was not set")
 	}
-	
+
 	// Test setting nil reader (should keep existing)
 	originalReader := comparator.profileReader
 	comparator.SetProfileReader(nil)
@@ -293,11 +293,11 @@ func TestProfileComparator_WithMockReader(t *testing.T) {
 	tmpDir := t.TempDir()
 	profile1 := filepath.Join(tmpDir, "profile1.txt")
 	profile2 := filepath.Join(tmpDir, "profile2.txt")
-	
+
 	// Create dummy files
 	os.WriteFile(profile1, []byte("dummy"), 0644)
 	os.WriteFile(profile2, []byte("dummy"), 0644)
-	
+
 	// Setup mock reader with predefined profiles
 	mockReader := &mockProfileReader{
 		profiles: map[string]map[string]int{
@@ -312,20 +312,20 @@ func TestProfileComparator_WithMockReader(t *testing.T) {
 			},
 		},
 	}
-	
+
 	comparator := NewProfileComparator()
 	comparator.SetProfileReader(mockReader)
-	
+
 	result, err := comparator.Compare(profile1, profile2)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	
+
 	// Should find block2 and block3 as newly hit
 	if len(result.NewlyHitBlocks) != 2 {
 		t.Errorf("expected 2 newly hit blocks, got %d", len(result.NewlyHitBlocks))
 	}
-	
+
 	// Check total hits
 	if result.TotalNewHits != 25 { // 5 + 20
 		t.Errorf("expected TotalNewHits=25, got %d", result.TotalNewHits)
@@ -336,19 +336,19 @@ func TestProfileComparator_ReaderError(t *testing.T) {
 	tmpDir := t.TempDir()
 	profile1 := filepath.Join(tmpDir, "profile1.txt")
 	profile2 := filepath.Join(tmpDir, "profile2.txt")
-	
+
 	// Create dummy files
 	os.WriteFile(profile1, []byte("dummy"), 0644)
 	os.WriteFile(profile2, []byte("dummy"), 0644)
-	
+
 	// Test error on first profile
 	mockReader := &mockProfileReader{
 		err: errors.New("read error"),
 	}
-	
+
 	comparator := NewProfileComparator()
 	comparator.SetProfileReader(mockReader)
-	
+
 	_, err := comparator.Compare(profile1, profile2)
 	if err == nil {
 		t.Errorf("expected error but got none")
@@ -363,13 +363,13 @@ func TestProfileComparatorProperties(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		// Generate random profiles
 		numBlocks := rapid.IntRange(0, 50).Draw(t, "numBlocks")
-		
+
 		profile1 := make(map[string]int)
 		profile2 := make(map[string]int)
-		
+
 		expectedNewBlocks := 0
 		expectedNewHits := 0
-		
+
 		for i := 0; i < numBlocks; i++ {
 			// Use index to ensure unique blocks
 			block := fmt.Sprintf("file.go:%d.%d,%d.%d %d",
@@ -378,21 +378,21 @@ func TestProfileComparatorProperties(t *testing.T) {
 				i+1, // endLine
 				rapid.IntRange(1, 100).Draw(t, "endCol"),
 				rapid.IntRange(1, 5).Draw(t, "stmts"))
-			
+
 			// Generate hit counts
 			hits1 := rapid.IntRange(0, 100).Draw(t, "hits1")
 			hits2 := rapid.IntRange(0, 100).Draw(t, "hits2")
-			
+
 			profile1[block] = hits1
 			profile2[block] = hits2
-			
+
 			// Track expected newly hit blocks
 			if hits1 == 0 && hits2 > 0 {
 				expectedNewBlocks++
 				expectedNewHits += hits2
 			}
 		}
-		
+
 		// Create mock reader
 		mockReader := &mockProfileReader{
 			profiles: map[string]map[string]int{
@@ -401,24 +401,24 @@ func TestProfileComparatorProperties(t *testing.T) {
 				"profile2": profile2,
 			},
 		}
-		
+
 		comparator := NewProfileComparator()
 		comparator.SetProfileReader(mockReader)
-		
+
 		// Create dummy files
 		tmpDir, _ := os.MkdirTemp("", "test-*")
 		defer os.RemoveAll(tmpDir)
-		
+
 		p1 := filepath.Join(tmpDir, "profile1")
 		p2 := filepath.Join(tmpDir, "profile2")
 		os.WriteFile(p1, []byte("dummy"), 0644)
 		os.WriteFile(p2, []byte("dummy"), 0644)
-		
+
 		result, err := comparator.Compare(p1, p2)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		
+
 		// Debug output on failure
 		if result.TotalNewBlocks != expectedNewBlocks || result.TotalNewHits != expectedNewHits {
 			t.Logf("Profile1: %v", profile1)
@@ -427,23 +427,23 @@ func TestProfileComparatorProperties(t *testing.T) {
 			t.Logf("Expected new hits: %d, got: %d", expectedNewHits, result.TotalNewHits)
 			t.Logf("Newly hit blocks: %v", result.NewlyHitBlocks)
 		}
-		
+
 		// Property 1: Number of newly hit blocks should match expected
 		if result.TotalNewBlocks != expectedNewBlocks {
 			t.Errorf("expected %d newly hit blocks, got %d", expectedNewBlocks, result.TotalNewBlocks)
 		}
-		
+
 		// Property 2: Total new hits should match expected
 		if result.TotalNewHits != expectedNewHits {
 			t.Errorf("expected %d total new hits, got %d", expectedNewHits, result.TotalNewHits)
 		}
-		
+
 		// Property 3: Length of NewlyHitBlocks should match TotalNewBlocks
 		if len(result.NewlyHitBlocks) != result.TotalNewBlocks {
 			t.Errorf("NewlyHitBlocks length (%d) doesn't match TotalNewBlocks (%d)",
 				len(result.NewlyHitBlocks), result.TotalNewBlocks)
 		}
-		
+
 		// Property 4: All newly hit blocks should have been 0 in profile1
 		for _, block := range result.NewlyHitBlocks {
 			if profile1[block.Block] != 0 {
@@ -453,7 +453,7 @@ func TestProfileComparatorProperties(t *testing.T) {
 				t.Errorf("block %s has non-positive hit count: %d", block.Block, block.HitCount)
 			}
 		}
-		
+
 		// Property 5: Sum of individual hit counts should equal TotalNewHits
 		sumHits := 0
 		for _, block := range result.NewlyHitBlocks {
@@ -467,7 +467,7 @@ func TestProfileComparatorProperties(t *testing.T) {
 
 func TestDefaultProfileReader_EdgeCases(t *testing.T) {
 	reader := &defaultProfileReader{}
-	
+
 	tests := []struct {
 		name     string
 		content  string
@@ -514,18 +514,18 @@ github.com/example/file.go:1.1,2.2 1 20`,
 			},
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := reader.ReadProfile(strings.NewReader(tt.content))
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-			
+
 			if len(result) != len(tt.expected) {
 				t.Errorf("expected %d entries, got %d", len(tt.expected), len(result))
 			}
-			
+
 			for block, expectedHits := range tt.expected {
 				if hits, ok := result[block]; !ok || hits != expectedHits {
 					t.Errorf("block %s: expected %d hits, got %d (exists: %v)",
@@ -539,7 +539,7 @@ github.com/example/file.go:1.1,2.2 1 20`,
 func TestWriteComparisonResult(t *testing.T) {
 	tmpDir := t.TempDir()
 	outputPath := filepath.Join(tmpDir, "output.txt")
-	
+
 	result := &ComparisonResult{
 		NewlyHitBlocks: []CoverageBlock{
 			{Block: "file.go:1.1,2.2 1", HitCount: 10},
@@ -550,29 +550,29 @@ func TestWriteComparisonResult(t *testing.T) {
 		Profile1Path:   "profile1.txt",
 		Profile2Path:   "profile2.txt",
 	}
-	
+
 	err := WriteComparisonResult(result, outputPath)
 	if err != nil {
 		t.Fatalf("failed to write result: %v", err)
 	}
-	
+
 	// Read back and verify
 	content, err := os.ReadFile(outputPath)
 	if err != nil {
 		t.Fatalf("failed to read output: %v", err)
 	}
-	
+
 	lines := strings.Split(strings.TrimSpace(string(content)), "\n")
 	if len(lines) != 2 {
 		t.Errorf("expected 2 lines, got %d", len(lines))
 	}
-	
+
 	// Verify format
 	expectedLines := []string{
 		"file.go:1.1,2.2 1 10",
 		"file.go:3.3,4.4 1 20",
 	}
-	
+
 	for i, expected := range expectedLines {
 		if i < len(lines) && lines[i] != expected {
 			t.Errorf("line %d: expected '%s', got '%s'", i, expected, lines[i])
@@ -584,25 +584,25 @@ func TestCompareCoverageProfiles_BackwardCompatibility(t *testing.T) {
 	tmpDir := t.TempDir()
 	profile1 := filepath.Join(tmpDir, "profile1.txt")
 	profile2 := filepath.Join(tmpDir, "profile2.txt")
-	
+
 	os.WriteFile(profile1, []byte(`mode: set
 github.com/example/file.go:1.1,2.2 1 0
 github.com/example/file.go:3.3,4.4 1 5`), 0644)
-	
+
 	os.WriteFile(profile2, []byte(`mode: set
 github.com/example/file.go:1.1,2.2 1 10
 github.com/example/file.go:3.3,4.4 1 5`), 0644)
-	
+
 	// Use backward compatibility function
 	diff, err := CompareCoverageProfiles(profile1, profile2)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	
+
 	if len(diff.NewlyHitBlocks) != 1 {
 		t.Errorf("expected 1 newly hit block, got %d", len(diff.NewlyHitBlocks))
 	}
-	
+
 	if diff.NewlyHitBlocks[0].HitCount != 10 {
 		t.Errorf("expected hit count 10, got %d", diff.NewlyHitBlocks[0].HitCount)
 	}

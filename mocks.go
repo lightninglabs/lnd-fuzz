@@ -38,11 +38,11 @@ func NewMockFileSystem() *MockFileSystem {
 func (m *MockFileSystem) AddFile(path string, content []byte, size int64) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if size == 0 && content != nil {
 		size = int64(len(content))
 	}
-	
+
 	m.files[path] = &mockFile{
 		name:    filepath.Base(path),
 		content: content,
@@ -50,7 +50,7 @@ func (m *MockFileSystem) AddFile(path string, content []byte, size int64) {
 		modTime: time.Now(),
 		isDir:   false,
 	}
-	
+
 	// Ensure parent directories exist
 	dir := filepath.Dir(path)
 	for dir != "." && dir != "/" {
@@ -106,9 +106,9 @@ func (m *MockFileSystem) GetFileContent(path string) []byte {
 func (m *MockFileSystem) ReadDir(name string) ([]os.DirEntry, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	var entries []os.DirEntry
-	
+
 	// Add files in this directory
 	for path, file := range m.files {
 		if filepath.Dir(path) == name {
@@ -119,7 +119,7 @@ func (m *MockFileSystem) ReadDir(name string) ([]os.DirEntry, error) {
 			})
 		}
 	}
-	
+
 	// Add subdirectories
 	for dir := range m.dirs {
 		if filepath.Dir(dir) == name {
@@ -134,11 +134,11 @@ func (m *MockFileSystem) ReadDir(name string) ([]os.DirEntry, error) {
 			})
 		}
 	}
-	
+
 	if len(entries) == 0 && !m.dirs[name] {
 		return nil, os.ErrNotExist
 	}
-	
+
 	return entries, nil
 }
 
@@ -146,7 +146,7 @@ func (m *MockFileSystem) ReadDir(name string) ([]os.DirEntry, error) {
 func (m *MockFileSystem) Stat(name string) (os.FileInfo, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if file, ok := m.files[name]; ok {
 		return file, nil
 	}
@@ -165,44 +165,44 @@ func (m *MockFileSystem) Open(name string) (File, error) {
 	m.mu.Lock()
 	file, ok := m.files[name]
 	m.mu.Unlock()
-	
+
 	if !ok {
 		return nil, os.ErrNotExist
 	}
-	
+
 	// Create a temporary file with the content
 	tmpFile, err := os.CreateTemp("", "mock-*")
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if _, err := tmpFile.Write(file.content); err != nil {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name())
 		return nil, err
 	}
-	
+
 	// Seek back to beginning
 	if _, err := tmpFile.Seek(0, 0); err != nil {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name())
 		return nil, err
 	}
-	
+
 	return tmpFile, nil
 }
 
 // Create implements FileSystem.Create
 func (m *MockFileSystem) Create(name string) (File, error) {
 	m.mu.Lock()
-	
+
 	m.files[name] = &mockFile{
 		name:    filepath.Base(name),
 		content: []byte{},
 		mode:    0644,
 		modTime: time.Now(),
 	}
-	
+
 	// Ensure parent directories exist
 	dir := filepath.Dir(name)
 	for dir != "." && dir != "/" {
@@ -210,13 +210,13 @@ func (m *MockFileSystem) Create(name string) (File, error) {
 		dir = filepath.Dir(dir)
 	}
 	m.mu.Unlock()
-	
+
 	// Create a temporary file that we'll track
 	tmpFile, err := os.CreateTemp("", "mock-create-*")
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Wrap the file to intercept writes
 	return &mockFileHandle{
 		File: tmpFile,
@@ -229,7 +229,7 @@ func (m *MockFileSystem) Create(name string) (File, error) {
 func (m *MockFileSystem) MkdirAll(path string, perm os.FileMode) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	parts := strings.Split(path, string(filepath.Separator))
 	current := ""
 	for _, part := range parts {
@@ -250,7 +250,7 @@ func (m *MockFileSystem) MkdirAll(path string, perm os.FileMode) error {
 func (m *MockFileSystem) Remove(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if _, ok := m.files[name]; ok {
 		delete(m.files, name)
 		return nil
@@ -266,7 +266,7 @@ func (m *MockFileSystem) Remove(name string) error {
 func (m *MockFileSystem) RemoveAll(path string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	// Remove all files and dirs with this prefix
 	for p := range m.files {
 		if strings.HasPrefix(p, path) {
@@ -285,7 +285,7 @@ func (m *MockFileSystem) RemoveAll(path string) error {
 func (m *MockFileSystem) Rename(oldpath, newpath string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if file, ok := m.files[oldpath]; ok {
 		m.files[newpath] = file
 		delete(m.files, oldpath)
@@ -311,7 +311,7 @@ func (m *MockFileSystem) Rename(oldpath, newpath string) error {
 func (m *MockFileSystem) TempDir(dir, pattern string) (string, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	m.tempNum++
 	name := fmt.Sprintf("/tmp/%s%d", strings.ReplaceAll(pattern, "*", ""), m.tempNum)
 	m.dirs[name] = true
@@ -377,15 +377,14 @@ func (h *mockFileHandle) updateContent() {
 	// Seek to beginning
 	h.File.Seek(0, 0)
 	content, _ := io.ReadAll(h.File)
-	
+
 	h.fs.mu.Lock()
 	defer h.fs.mu.Unlock()
-	
+
 	if file, ok := h.fs.files[h.path]; ok {
 		file.content = content
 	}
 }
-
 
 // MockCommandRunner is a mock implementation of CommandRunner for testing.
 type MockCommandRunner struct {
@@ -417,7 +416,7 @@ func NewMockCommandRunner() *MockCommandRunner {
 func (m *MockCommandRunner) SetOutput(name string, args []string, output []byte, err error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	key := m.commandKey(name, args)
 	m.outputs[key] = MockOutput{
 		Output: output,
@@ -429,7 +428,7 @@ func (m *MockCommandRunner) SetOutput(name string, args []string, output []byte,
 func (m *MockCommandRunner) GetCommands() []MockCommand {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	return append([]MockCommand{}, m.commands...)
 }
 
@@ -437,29 +436,29 @@ func (m *MockCommandRunner) GetCommands() []MockCommand {
 func (m *MockCommandRunner) Run(dir string, env []string, name string, args ...string) ([]byte, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	m.commands = append(m.commands, MockCommand{
 		Dir:  dir,
 		Name: name,
 		Args: args,
 		Env:  env,
 	})
-	
+
 	key := m.commandKey(name, args)
 	if output, ok := m.outputs[key]; ok {
 		return output.Output, output.Error
 	}
-	
+
 	// Default output for go test commands
 	if name == "go" && len(args) > 0 && args[0] == "test" {
 		return []byte("DEBUG finished processing ... initial coverage bits: 100"), nil
 	}
-	
+
 	// Default output for go tool covdata commands
 	if name == "go" && len(args) >= 3 && args[0] == "tool" && args[1] == "covdata" && args[2] == "textfmt" {
 		return []byte("mode: set\ndefault coverage data"), nil
 	}
-	
+
 	return nil, fmt.Errorf("unexpected command: %s %v", name, args)
 }
 

@@ -17,7 +17,7 @@ func main() {
 		dryRun       bool
 		cacheDir     string
 	)
-	
+
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options] LND_DIR\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\nFetches coverage data for each fuzz test, combines them, and produces a\n")
@@ -40,7 +40,7 @@ func main() {
 	}
 
 	lndDir := flag.Arg(0)
-	
+
 	// Get base directory (where this command is run from)
 	baseDir, err := os.Getwd()
 	if err != nil {
@@ -96,7 +96,7 @@ func main() {
 	// Print results
 	fmt.Printf("\nCoverage Collection Results:\n")
 	fmt.Printf("  Total targets: %d\n", len(result.Targets))
-	
+
 	successful := 0
 	failed := 0
 	totalInputs := 0
@@ -114,7 +114,7 @@ func main() {
 			}
 		}
 	}
-	
+
 	fmt.Printf("  Successful: %d\n", successful)
 	fmt.Printf("  Failed: %d\n", failed)
 	fmt.Printf("  Total inputs: %d\n", totalInputs)

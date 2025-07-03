@@ -24,11 +24,11 @@ type MergeResult struct {
 
 // CoverageTarget represents coverage data for a single fuzz target.
 type CoverageTarget struct {
-	Package    string
-	Target     string
-	NumInputs  int
+	Package     string
+	Target      string
+	NumInputs   int
 	CoverageDir string
-	Error      error
+	Error       error
 }
 
 // CoverageResult contains the results of coverage collection.
@@ -55,13 +55,13 @@ type ProgressReporter interface {
 	// current is the current item being processed, total is the total number of items.
 	// message provides additional context about what's happening.
 	ReportProgress(current, total int, message string)
-	
+
 	// ReportInfo reports general information messages.
 	ReportInfo(message string)
-	
+
 	// ReportWarning reports warning messages.
 	ReportWarning(message string)
-	
+
 	// ReportError reports error messages that don't stop execution.
 	ReportError(message string)
 }
@@ -70,6 +70,6 @@ type ProgressReporter interface {
 type NullProgressReporter struct{}
 
 func (NullProgressReporter) ReportProgress(current, total int, message string) {}
-func (NullProgressReporter) ReportInfo(message string) {}
-func (NullProgressReporter) ReportWarning(message string) {}
-func (NullProgressReporter) ReportError(message string) {}
+func (NullProgressReporter) ReportInfo(message string)                         {}
+func (NullProgressReporter) ReportWarning(message string)                      {}
+func (NullProgressReporter) ReportError(message string)                        {}
