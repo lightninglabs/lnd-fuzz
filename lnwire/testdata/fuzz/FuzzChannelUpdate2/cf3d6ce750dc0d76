@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("\x05\x05.29Z0\a\x0272 \bz8X7x\xd09%$\fy Ay(0$0a87(%\n7YxbBZ92Y*&\x02%8(\x042Z221\x04##1$2\x02c87\x03YBz8\x0390A9\x03Y0BY\x05%8\"(A")
