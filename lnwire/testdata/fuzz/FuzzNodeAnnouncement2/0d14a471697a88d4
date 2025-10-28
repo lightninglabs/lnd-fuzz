@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("\x00a!BAA,#x0aY.1Babba 820xA0b1 Y(2\x007#0($8b!#*\x00\x00\x00 A\"B0&A%C$ \"A \"BB#B800(0 00. \"&1( 20\"\"000A0(0!\"a0B)BX")
