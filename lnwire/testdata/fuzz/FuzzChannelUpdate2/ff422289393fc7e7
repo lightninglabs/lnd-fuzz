@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("\x05\x05929 C\a\x02 Z \bX8 7&Byb$\f1 %1C10Z0,7(%\n7cx(BZ(2,*&\x02Z1,\x04B0Xb1\x04)Xc)2\x020c7\x03Y$b8\x038109\x03%0BY\x05%a1%#")
