@@ -1,0 +1,2 @@
+go test fuzz v1
+[]byte("\x02\x06)1,2)c\x04\x04&x #\xfe!0a2\x05!$%c(\xfe%#\")\x04'Zb\"\xfe2'cy\x15cxC&1007087BbB1ca@'Y,\xff!z2*c81A\x05$\"ccA\xff\"8 Y880a\x051 X8b\xff$9!c2yy$\x00\xff9)YY12 &\x00\xff9c9A1'2!\x042B$X\xffCAa79Ba%\x04!b9%\xffbcc(,xCB\x027A")
